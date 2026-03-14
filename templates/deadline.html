@@ -1,0 +1,272 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h1 style="font-size:32px">⏳ Deadline Manager</h1>
+
+<div class="cardlist">
+
+<!-- ADD DEADLINE -->
+
+<div class="card">
+<h3>New Deadline</h3>
+
+<input id="title" placeholder="Task name" class="input-field">
+<input type="datetime-local" id="deadline" class="input-field">
+
+<button onclick="addDeadline()">+ Add Deadline</button>
+
+</div>
+
+<!-- MANUAL SESSION -->
+
+
+
+<!-- AUTO SCHEDULER -->
+
+<div class="card">
+
+<h3>⚡ Auto Schedule</h3>
+
+<input id="auto_title" placeholder="Topic (Physics, Math etc)">
+
+<input id="auto_hours" type="number" placeholder="Total Hours">
+
+<input id="auto_deadline" type="date">
+
+<button onclick="autoSchedule()">
+Generate Smart Plan
+</button>
+
+</div>
+
+</div>
+
+<hr>
+
+<h2>Active Deadlines</h2>
+
+<div class="cardlist">
+
+{% for t in tasks %}
+
+<div class="card">
+
+<b>{{t.title}}</b>
+
+<p>📅 {{t.deadline}}</p>
+
+<span id="remain{{t.id}}">...</span>
+
+</div>
+
+<script>
+
+(function(){
+
+let target = new Date("{{t.deadline}}")
+
+let el = document.getElementById("remain{{t.id}}")
+
+function update(){
+
+let diff = target - new Date()
+
+if(diff <= 0){
+el.innerText = "PASSED"
+return
+}
+
+let d = Math.floor(diff / 86400000)
+let h = Math.floor((diff / 3600000) % 24)
+let m = Math.floor((diff / 60000) % 60)
+
+el.innerText = d + "d " + h + "h " + m + "m"
+
+}
+
+update()
+setInterval(update,60000)
+
+})()
+
+</script>
+
+{% endfor %}
+
+</div>
+
+<div class="card">
+<h3>Deadline Distribution</h3>
+<canvas id="deadlineChart"></canvas>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+
+
+
+/* ADD DEADLINE */
+
+function addDeadline(){
+
+let title = document.getElementById("title").value
+let deadline = document.getElementById("deadline").value
+
+if(!title || !deadline){
+
+alert("Fill all fields")
+return
+
+}
+
+fetch("/add_deadline",{
+
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({title,deadline})
+
+})
+
+.then(()=>location.reload())
+
+}
+
+
+
+/* MANUAL SCHEDULE */
+
+function scheduleDeadlineTask(){
+
+let data = {
+
+title:document.getElementById("stitle").value,
+day:document.getElementById("sday").value,
+start:document.getElementById("sstart").value,
+end:document.getElementById("send").value,
+priority:"High"
+
+}
+
+fetch("/add_auto",{
+
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify(data)
+
+})
+
+.then(()=>{
+
+alert("Added to schedule")
+
+window.location.href="/"
+
+})
+
+}
+
+
+
+/* AUTO SCHEDULER */
+
+function autoSchedule(){
+
+let title = document.getElementById("auto_title").value
+let hours = document.getElementById("auto_hours").value
+let deadline = document.getElementById("auto_deadline").value
+
+
+if(!title || !hours || !deadline){
+
+alert("Fill all fields")
+
+return
+
+}
+
+
+fetch("/auto_schedule",{
+
+method:"POST",
+
+headers:{
+
+"Content-Type":"application/json"
+
+},
+
+body:JSON.stringify({
+
+title:title,
+hours:hours,
+deadline:deadline
+
+})
+
+})
+
+.then(res=>res.json())
+
+.then(data=>{
+
+alert(data.msg)
+location.reload()
+
+})
+
+}
+
+
+
+/* CHART */
+
+const dbTasks = {{tasks|tojson}}
+
+new Chart(
+
+document.getElementById("deadlineChart"),
+
+{
+
+type:"bar",
+
+data:{
+
+labels:dbTasks.map(t=>t.title),
+
+datasets:[{
+
+label:"Days Left",
+
+data:dbTasks.map(t=>
+
+Math.max(0,
+
+((new Date(t.deadline)-new Date())/86400000)
+
+.toFixed(1)
+
+)
+
+),
+
+backgroundColor:"#333"
+
+}]
+
+},
+
+options:{
+
+plugins:{legend:{display:false}}
+
+}
+
+}
+
+)
+
+</script>
+
+{% endblock %}

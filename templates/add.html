@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h1>Add Task</h1>
+
+<form method="post" class="form">
+
+<input name="title" placeholder="Task title" required>
+
+<select name="day">
+<option>Monday</option>
+<option>Tuesday</option>
+<option>Wednesday</option>
+<option>Thursday</option>
+<option>Friday</option>
+<option>Saturday</option>
+<option>Sunday</option>
+</select>
+
+<input type="time" name="start" required>
+<input type="time" name="end" required>
+
+<label>Priority</label>
+
+<select name="priority">
+<option value="Low">Low</option>
+<option value="Medium" selected>Medium</option>
+<option value="High">High</option>
+<option value="Critical">Critical</option>
+</select>
+
+<button type="submit">Add Task</button>
+
+</form>
+
+<h2>Auto Weekly Task</h2>
+
+<input id="wtitle" placeholder="Task name">
+
+<input id="wduration" placeholder="Duration in minutes">
+
+<label>Priority</label>
+
+<select id="wpriority">
+<option value="Low">Low</option>
+<option value="Medium" selected>Medium</option>
+<option value="High">High</option>
+<option value="Critical">Critical</option>
+</select>
+
+<button onclick="weeklyAuto()">Create for week</button>
+<h2>Manual Weekly Task</h2>
+
+<input id="mtitle" placeholder="Task name">
+
+<select id="mday">
+<option>Monday</option>
+<option>Tuesday</option>
+<option>Wednesday</option>
+<option>Thursday</option>
+<option>Friday</option>
+<option>Saturday</option>
+<option>Sunday</option>
+</select>
+
+<input type="time" id="mstart">
+<input type="time" id="mend">
+
+<select id="mpriority">
+<option>Low</option>
+<option>Medium</option>
+<option>High</option>
+</select>
+
+<button onclick="manualWeekly()">Add Weekly Task</button>
+
+<h3>Time Debt</h3>
+
+<input type="number" id="debt_hours" placeholder="Hours">
+
+<input type="number" id="debt_minutes" placeholder="Minutes">
+
+<button onclick="addDebt()">Add Debt</button>
+
+
+
+
+
+
+
+
+{% endblock %}

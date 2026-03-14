@@ -1,0 +1,259 @@
+/* Prevent horizontal overflow and fix the box model */
+* {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+:root {
+    --bg: #0f172a;
+    --card: #1e293b;
+    --primary: #38bdf8;
+    --accent: #6366f1;
+    --text: #f8fafc;
+    --glass: rgba(255, 255, 255, 0.03);
+}
+
+/* Base Layout */
+
+body {
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg);
+    color: var(--text);
+    overflow-x: hidden;
+}
+
+/* Header */
+
+.top-header {
+    height: 60px;
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    background: rgba(15, 23, 42, 0.8);
+    backdrop-filter: blur(10px);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.container {
+    padding: 15px;
+    padding-bottom: 100px;
+}
+
+/* Cards */
+
+.card,
+.dayblock,
+.form-container {
+    background: var(--card);
+    border-radius: 20px;
+    padding: 20px;
+    margin-bottom: 16px;
+    border: 1px solid rgba(255,255,255,0.05);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+}
+
+/* Task blocks */
+
+.task {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 14px;
+    margin-top: 8px;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.04);
+    font-size: 14px;
+}
+
+/* Delete icon */
+
+.task a {
+    text-decoration: none;
+    font-size: 16px;
+    opacity: 0.7;
+    transition: 0.2s;
+}
+
+.task a:hover {
+    opacity: 1;
+    transform: scale(1.1);
+}
+
+/* Priority Colors */
+
+.low {
+    border-left: 5px solid #22c55e;
+}
+
+.medium {
+    border-left: 5px solid #facc15;
+}
+
+.high {
+    border-left: 5px solid #fb923c;
+}
+
+.critical {
+    border-left: 5px solid #ef4444;
+}
+
+/* Inputs */
+
+input,
+select {
+    width: 100%;
+    height: 50px;
+    padding: 0 15px;
+    margin-bottom: 12px;
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.1);
+    background: var(--bg);
+    color: white;
+    font-size: 16px;
+}
+
+/* Buttons */
+
+button {
+    width: 100%;
+    height: 50px;
+    background: var(--primary);
+    border: none;
+    border-radius: 12px;
+    font-weight: 700;
+    color: #0f172a;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+button:hover {
+    background: var(--accent);
+}
+
+button:active {
+    transform: scale(0.98);
+}
+
+/* Bottom Navigation */
+
+.nav-bar {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    height: 75px;
+    background: rgba(15, 23, 42, 0.95);
+    backdrop-filter: blur(15px);
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    z-index: 1000;
+}
+
+.nav-link {
+    text-decoration: none;
+    color: #94a3b8;
+    font-size: 10px;
+    font-weight: 600;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+}
+
+.nav-link span {
+    font-size: 20px;
+    margin-bottom: 2px;
+}
+
+/* Slot result */
+
+#resultBox {
+    background: var(--glass);
+    padding: 15px;
+    border-radius: 12px;
+    margin: 10px 0;
+    text-align: center;
+    font-size: 14px;
+    color: var(--primary);
+}
+
+
+/*deadlines
+.deadline-container{
+margin-top:20px;
+}
+
+.deadline-card{
+background:white;
+padding:12px;
+border-radius:8px;
+margin-bottom:10px;
+box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.deadline-card.urgent{
+border-left:5px solid red;
+}
+
+.progressbar{
+background:#eee;
+height:10px;
+border-radius:10px;
+overflow:hidden;
+}
+
+.progress{
+background:#4CAF50;
+height:100%;
+}
+
+canvas{
+margin-top:40px;
+max-width:100%;
+}
+
+/* Pomodoro Timer */
+
+.timer {
+    font-size: 80px;
+    font-weight: 800;
+    text-align: center;
+    margin: 30px 0;
+    font-variant-numeric: tabular-nums;
+    color: var(--text);
+}
+/* Ensure canvas elements stay within their cards */
+canvas {
+    max-width: 100% !important;
+    height: auto !important;
+}
+
+/* Color variable for labels */
+:root {
+    --text-dim: #94a3b8;
+}
+
+/* Smooth transitions for the cards */
+.card {
+    transition: transform 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+/* Headings */
+
+h1 {
+    margin-top: 0;
+}
+
+h2 {
+    margin-bottom: 10px;
+    font-size: 18px;
+}

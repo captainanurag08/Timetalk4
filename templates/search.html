@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h1>Find Free Slot</h1>
+
+<input id="title" placeholder="Task name">
+
+<select id="day">
+<option>Monday</option>
+<option>Tuesday</option>
+<option>Wednesday</option>
+<option>Thursday</option>
+<option>Friday</option>
+<option>Saturday</option>
+<option>Sunday</option>
+</select>
+
+<input id="duration" placeholder="Duration (minutes)">
+
+<label>Search Between</label>
+
+<input type="time" id="startRange">
+<input type="time" id="endRange">
+
+<label>Priority</label>
+
+<select id="priority">
+<option value="Low">Low</option>
+<option value="Medium" selected>Medium</option>
+<option value="High">High</option>
+<option value="Critical">Critical</option>
+</select>
+
+<button onclick="findSlot()">Find Slot</button>
+
+<br><br>
+
+<div id="resultBox"></div>
+<script src="{{ url_for('static', filename='app.js') }}"></script>
+
+{% endblock %}

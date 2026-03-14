@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div id="debtBox"></div>
+
+<h1>Weekly Schedule</h1>
+
+
+{% for day, tasks in data.items() %}
+
+<div class="dayblock">
+
+<h2>{{ day }}</h2>
+
+{% if tasks %}
+
+{% for t in tasks %}
+
+<div class="task {{ t.priority|lower }}">
+
+<span>
+{{ t.title }} ({{ t.start }} - {{ t.end_time }})
+</span>
+
+<a href="/delete/{{ t.id }}">❌</a>
+
+</div>
+
+{% endfor %}
+
+{% else %}
+
+<p>No tasks</p>
+
+{% endif %}
+
+</div>
+
+{% endfor %}
+
+{% endblock %}

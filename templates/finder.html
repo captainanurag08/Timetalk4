@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h1>Slot Finder 🔍</h1>
+
+<label>Day</label>
+<select id="day">
+<option>Monday</option>
+<option>Tuesday</option>
+<option>Wednesday</option>
+<option>Thursday</option>
+<option>Friday</option>
+<option>Saturday</option>
+<option>Sunday</option>
+</select>
+
+<br><br>
+
+<label>Duration (minutes)</label>
+<input type="number" id="duration">
+
+<br><br>
+
+<label>Start Time</label>
+<input type="time" id="start">
+
+<br><br>
+
+<label>End Time</label>
+<input type="time" id="end">
+
+<br><br>
+
+<button onclick="findSlot()">Find Free Slot</button>
+
+<h3>Available Slots</h3>
+<div id="result"></div>
+
+<script>
+    
+
+async function findSlot(){
+
+let res = await fetch("/find_slot",{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({
+day:document.getElementById("day").value,
+duration:document.getElementById("duration").value,
+start:document.getElementById("start").value,
+end:document.getElementById("end").value
+})
+})
+
+let data = await res.json()
+
+let html=""
+
+if(data.length==0){
+html="<p>No free slots found</p>"
+}else{
+data.forEach(s=>{
+html+=`<p>🕒 ${s.start} - ${s.end}</p>`
+})
+}
+
+document.getElementById("result").innerHTML=html
+
+}
+
+</script>
+
+{% endblock %}

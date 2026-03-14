@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h1 style="margin-bottom:5px;">Analytics</h1>
+<p style="color: var(--text-dim); font-size:14px; margin-bottom:25px;">
+Weekly Performance Overview
+</p>
+
+<div style="display:grid; grid-template-columns:1fr 1fr; gap:15px; margin-bottom:25px;">
+    
+<div class="card" style="text-align:center; padding:15px;">
+<span style="font-size:12px; color:var(--primary);">TOTAL TASKS</span>
+<div style="font-size:24px; font-weight:800;">
+{{ day_data|sum if day_data else 0 }}
+</div>
+</div>
+
+<div class="card" style="text-align:center; padding:15px;">
+<span style="font-size:12px; color:var(--accent);">TOTAL HOURS</span>
+<div style="font-size:24px; font-weight:800;">
+{{ hour_data|sum if hour_data else 0 }}
+</div>
+</div>
+
+</div>
+
+<div class="card">
+<h2 style="font-size:16px;">Daily Task Load</h2>
+<canvas id="dayChart" height="120"></canvas>
+</div>
+
+<div class="card">
+<h2 style="font-size:16px;">Priority Distribution</h2>
+<div style="max-width:250px; margin:auto;">
+<canvas id="priorityChart" height="200"></canvas>
+</div>
+</div>
+
+<div class="card">
+<h2 style="font-size:16px;">Time Allocation (Hours)</h2>
+<canvas id="hourChart" height="120"></canvas>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function(){
+
+const dayLabels = {{ day_labels|default([])|tojson }};
+const dayData = {{ day_data|default([])|tojson }};
+const hourData = {{ hour_data|default([])|tojson }};
+const priorityLabels = {{ priority_labels|default([])|tojson }};
+const priorityData = {{ priority_data|default([])|tojson }};
+
+Chart.defaults.color = '#94a3b8';
+Chart.defaults.borderColor = 'rgba(255,255,255,0.1)';
+
+
+// Daily tasks chart
+new Chart(document.getElementById('dayChart'), {
+
+type:'bar',
+
+data:{
+labels:dayLabels,
+datasets:[{
+label:'Tasks',
+data:dayData,
+backgroundColor:'#38bdf8',
+borderRadius:8
+}]
+},
+
+options:{
+plugins:{legend:{display:false}},
+responsive:true
+}
+
+});
+
+
+// Priority chart
+new Chart(document.getElementById('priorityChart'), {
+
+type:'doughnut',
+
+data:{
+labels:priorityLabels,
+datasets:[{
+data:priorityData,
+backgroundColor:[
+'#22c55e',
+'#facc15',
+'#fb923c',
+'#ef4444'
+],
+borderWidth:0
+}]
+},
+
+options:{
+cutout:'70%',
+responsive:true
+}
+
+});
+
+
+// Hour chart
+new Chart(document.getElementById('hourChart'), {
+
+type:'line',
+
+data:{
+labels:dayLabels,
+datasets:[{
+label:'Hours',
+data:hourData,
+borderColor:'#6366f1',
+tension:0.4,
+fill:true,
+backgroundColor:'rgba(99,102,241,0.1)'
+}]
+},
+
+options:{
+responsive:true
+}
+
+});
+
+});
+
+</script>
+
+{% endblock %}

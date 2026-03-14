@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h1 style="font-size:32px">
+👋 Hello Anurag
+</h1>
+
+
+<h2>⏳ Upcoming Deadlines</h2>
+<div class="cardlist" id="deadlineBox">
+    <p>Loading deadlines...</p>
+
+
+<h3 style="opacity:0.7">
+Today is {{today}}
+</h3>
+
+
+</div>
+<h4>Today's schedule</h4>
+
+
+<div class="cardlist">
+
+{% if tasks %}
+
+{% for t in tasks %}
+
+<div class="card">
+
+<b>{{ t.title }}</b>
+
+<p>
+🕒 {{ t.start }} - {{ t.end_time }}
+</p>
+
+<p>
+Priority: {{ t.priority }}
+</p>
+
+</div>
+
+{% endfor %}
+
+{% else %}
+
+<p>No tasks for today 🎉</p>
+
+{% endif %}
+
+</div>
+
+
+{% endblock %}
