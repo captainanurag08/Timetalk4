@@ -1,30 +1,178 @@
 import os
 import atexit
 import logging
-from datetime import timedelta, datetime, time as dt_time
+from datetime import datetime, time as dt_time
 from typing import Optional
 
-from flask import Flask, request, jsonify, render_template, redirect
-from psycopg2 import pool
+import psycopg2
 import psycopg2.extras
+from psycopg2 import pool
+
+from flask import Flask, request, jsonify, render_template, redirect
+
 
 # ==============================
 # CONFIGURATION
 # ==============================
 
-DATABASE_URL = os.environ.get(
-    "DATABASE_URL",
-    "postgresql://postgres:anurag805048050@db.jhlsanuygopfwcqpkmqu.supabase.co:5432/postgres"
-)
+DATABASE_URL = os.environ.get("postgresql://postgres.jhlsanuygopfwcqpkmqu:anurag805048050@aws-1-ap-southeast-1.pooler.supabase.com:5432/postgres")
+
+if not DATABASE_URL:
+    raise RuntimeError(
+        "DATABASE_URL environment variable is not set."
+    )
 
 
 MIN_DB_CONN = 1
-MAX_DB_CONN = 10
+MAX_DB_CONN = 5
 
 app = Flask(__name__)
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("timetalk")
 
+
+# ==============================
+# DATABASE POOL
+# ==============================
+
+db_pool: Optional[pool.ThreadedConnectionPool] = None
+
+
+def init_db_pool():
+    global db_pool
+
+    if db_pool is None:
+        logger.info("Connecting to Supabase PostgreSQL...")
+
+        db_pool = pool.ThreadedConnectionPool(
+            MIN_DB_CONN,
+            MAX_DB_CONN,
+            DATABASE_URL
+        )
+
+        logger.info("Supabase database connected successfully.")
+
+    return db_pool
+
+
+def close_db_pool():
+    global db_pool
+
+    if db_pool:
+        db_pool.closeall()
+        db_pool = None
+
+
+atexit.register(close_db_pool)
+
+
+# ==============================
+# DB HELPERS
+# ==============================
+
+def get_conn():
+    return init_db_pool().getconn()
+
+
+def release_conn(conn):
+    if db_pool:
+        db_pool.putconn(conn)
+
+
+def fetchall(query, params=()):
+    conn = get_conn()
+
+    try:
+        with conn.cursor(
+            cursor_factory=psycopg2.extras.RealDictCursor
+        ) as cur:
+
+            cur.execute(query, params)
+            return cur.fetchall()
+
+    except Exception:
+        conn.rollback()
+        raise
+
+    finally:
+        release_conn(conn)
+
+
+def execute(query, params=()):
+    conn = get_conn()
+
+    try:
+        with conn.cursor() as cur:
+            cur.execute(query, params)
+
+        conn.commit()
+
+    except Exception:
+        conn.rollback()
+        raise
+
+    finally:
+        release_conn(conn)
+
+
+# ==============================
+# DATABASE INIT
+# ==============================
+
+def init_schema():
+
+    execute("""
+        CREATE TABLE IF NOT EXISTS tasks (
+            id SERIAL PRIMARY KEY,
+            title TEXT NOT NULL,
+            day TEXT NOT NULL,
+            start TIME,
+            end_time TIME,
+            priority TEXT DEFAULT 'Medium',
+            deadline DATE
+        )
+    """)
+
+    execute("""
+        CREATE TABLE IF NOT EXISTS time_debt (
+            id SERIAL PRIMARY KEY,
+            minutes INTEGER NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+
+    # This is safe if the table already existed
+    execute("""
+        ALTER TABLE tasks
+        ADD COLUMN IF NOT EXISTS deadline DATE
+    """)
+
+    logger.info("Database schema initialized.")
+
+
+# ==============================
+# START SERVER
+# ==============================
+
+if __name__ == "__main__":
+
+    port = int(os.environ.get("PORT", 5000))
+
+    try:
+        init_db_pool()
+        init_schema()
+
+        logger.info("Starting Flask server on port %s", port)
+
+        app.run(
+            host="0.0.0.0",
+            port=port
+        )
+
+    except Exception:
+        logger.exception("DATABASE STARTUP FAILED")
+        raise
 # ==============================
 # DATABASE POOL
 # ==============================
