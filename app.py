@@ -15,7 +15,7 @@ from flask import Flask, request, jsonify, render_template, redirect
 # CONFIGURATION
 # ==============================
 
-DATABASE_URL = os.environ.get("postgresql://postgres.jhlsanuygopfwcqpkmqu:anurag805048050@aws-1-ap-southeast-1.pooler.supabase.com:5432/postgres")
+DATABASE_URL = "postgresql://postgres.jhlsanuygopfwcqpkmqu:anurag805048050@aws-1-ap-southeast-1.pooler.supabase.com:5432/postgres"
 
 if not DATABASE_URL:
     raise RuntimeError(
